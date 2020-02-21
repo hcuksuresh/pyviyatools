@@ -4,11 +4,12 @@
 # listrules.py
 # August 2018
 #
-# listrulesforidentity  
+# listrules.py
 #
 # Change History
 # December 2018 - Added custom CSV output code, which writes out consistent columns in a specific order for the result rules JSON
 # January 2019 - Added 'id' to list of desired output columns
+# February 2020 - Fixed print statement for python 3, adding parantheses
 #
 # Copyright © 2018, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
 #
@@ -121,5 +122,5 @@ elif output_style=='csv':
             outstr=outstr+str(item[column])
       print(outstr)
 else:
-  print "output_style can be json, simple or csv. You specified " + output_style + " which is invalid."
+  print("output_style can be json, simple or csv. You specified " + output_style + " which is invalid.")
 

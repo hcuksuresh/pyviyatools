@@ -119,8 +119,7 @@ if areyousure.upper() =='Y':
 				json_name=resultdata['items'][i]["name"].replace(" ","")+'_'+str(i)
 
 				json_name=json_name.replace("(","_")
-                                json_name=json_name.replace(")","_")
-
+				json_name=json_name.replace(")","_")
 							
 				command=clidir+'sas-admin transfer export -u /reports/reports/'+id+' --name "'+package_name+'"'
 				print(command)     

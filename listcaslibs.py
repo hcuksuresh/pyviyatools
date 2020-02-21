@@ -32,27 +32,29 @@ debug=False
 # Import Python modules
 import argparse
 import sys
-from sharedfunctions import callrestapi
+from sharedfunctions import callrestapi, printresult
 
 # Define exception handler so that we only output trace info from errors when in debug mode
 def exception_handler(exception_type, exception, traceback, debug_hook=sys.excepthook):
     if debug:
         debug_hook(exception_type, exception, traceback)
     else:
-        print "%s: %s" % (exception_type.__name__, exception)
+        print("%s: %s" % (exception_type.__name__, exception))
 
 sys.excepthook = exception_handler
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--noheader", action='store_true', help="Do not print the header row")
+parser.add_argument("-o","--output", help="Output Style", choices=['csv','json','simple'],default='csv')
 parser.add_argument("-d","--debug", action='store_true', help="Debug")
 args = parser.parse_args()
 noheader=args.noheader
+output_style=args.output
 debug=args.debug
 
 # Print header row unless noheader argument was specified
-if not noheader:
-    print('server,caslib')
+#if not noheader:
+#    print('server,caslib')
     
 endpoint='/casManagement/servers'
 method='get'
@@ -65,6 +67,11 @@ if debug:
     print('serverlist_result_json is a '+type(serverlist_result_json).__name__+' object') #serverlist_result_json is a dict object
 
 servers = serverlist_result_json['items']
+
+# Create our own dictionary object that we will populate with the content we wish to output, in the user's chosen output format
+constructed_result={} # Make a new dictionary
+constructed_result['items']={}
+constructed_result_item_counter=0
 
 for server in servers:
     servername=server['name']
@@ -79,4 +86,9 @@ for server in servers:
     caslibs=caslibs_result_json['items']
 
     for caslib in caslibs:
-        print(server['name']+','+caslib['name'])
+        # print(server['name']+','+caslib['name'])
+        constructed_result['items'][constructed_result_item_counter]={'server': server['name'], 'caslib': caslib['name']}
+        constructed_result_item_counter=constructed_result_item_counter+1
+
+constructed_result['count']=constructed_result_item_counter
+printresult(constructed_result,output_style,colsforcsv=['server','caslib'],showheaderforcsv=(not noheader))

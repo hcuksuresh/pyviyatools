@@ -36,29 +36,31 @@ debug=False
 # Import Python modules
 import argparse
 import sys
-from sharedfunctions import callrestapi
+from sharedfunctions import callrestapi, printresult
 
 # Define exception handler so that we only output trace info from errors when in debug mode
 def exception_handler(exception_type, exception, traceback, debug_hook=sys.excepthook):
     if debug:
         debug_hook(exception_type, exception, traceback)
     else:
-        print "%s: %s" % (exception_type.__name__, exception)
+        print("%s: %s" % (exception_type.__name__, exception))
 
 sys.excepthook = exception_handler
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--noheader", action='store_true', help="Do not print the header row")
 parser.add_argument("-a","--showall", action='store_true', help="Show all domains, including credentials and tokens which are not displayed in SAS Environment Manager")
+parser.add_argument("-o","--output", help="Output Style", choices=['csv','json','simplejson'],default='csv')
 parser.add_argument("-d","--debug", action='store_true', help="Debug")
 args = parser.parse_args()
 noheader=args.noheader
 showall=args.showall
+output_style=args.output
 debug=args.debug
 
-# Print header row unless noheader argument was specified
-if not noheader:
-    print('id,type,description')
+# Print header row unless noheader argument was specified - removed when switching to printresults
+#if not noheader:
+#    print('id,type,description')
     
 endpoint='/credentials/domains?limit=10000'
 method='get'
@@ -66,18 +68,20 @@ method='get'
 #make the rest call
 domainlist_result_json=callrestapi(endpoint,method)
 
-normalDomainTypes=['password','connection','cryptDomain']
-
 if debug:
     print(domainlist_result_json)
     print('domainlist_result_json is a '+type(domainlist_result_json).__name__+' object') #domainlist_result_json is a dict object
 
-domains = domainlist_result_json['items']
+printresult(domainlist_result_json,output_style,colsforcsv=['id','type','description'],showheaderforcsv=(not noheader))
 
-for domain in domains:
-    id=domain['id']
-    type=domain['type']
-    description=domain['description']
-
-    if type in normalDomainTypes or showall:
-        print(id+","+type+",\""+description+"\"")
+#sys.exit()
+#
+#normalDomainTypes=['password','connection','cryptDomain']
+#domains = domainlist_result_json['items']
+#for domain in domains:
+#    id=domain['id']
+#    type=domain['type']
+#    description=domain['description']
+#
+#    if type in normalDomainTypes or showall:
+#        print(id+","+type+",\""+description+"\"")

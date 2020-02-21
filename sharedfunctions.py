@@ -357,20 +357,18 @@ def simpleresults(resultdata):
 #   01aug2018  initial development
 #   19dece2018 print  csv in column orderwith only common columns  
 
-def csvresults(resultdata,columns=[]):
-
+def csvresults(resultdata,columns=[],showheader=True):
       
     if 'items' in resultdata:
-    
+
         total_items=resultdata['count']
-        
+
         returned_items=len(resultdata['items'])
         
         if total_items == 0: print("Note: No items returned.")
             
         for i in range(0,returned_items):  
-        
-               
+                       
             origpairs=resultdata['items'][i]
             
             # create an ordered dictionary
@@ -392,17 +390,18 @@ def csvresults(resultdata,columns=[]):
             z=0
             
             # print header row of column names
-            for key,val in pairs.items():
-                            
-                z=z+1            
-                
-                # seperate with comma except last item
-                if z==numvals: sep=''
-                else: sep=','
-    
-                if i==0 and key in columns: print(key,sep,end="")
-                
-            print("\n",end="")
+            if i==0 and showheader:
+                for key,val in pairs.items():
+                               
+                    z=z+1            
+                    
+                    # seperate with comma except last item
+                    if z==numvals: sep=''
+                    else: sep=','
+        
+                    if key in columns : print(key+sep,end="")
+                    
+                print("\n",end="")
             
             z=0
             
@@ -416,27 +415,27 @@ def csvresults(resultdata,columns=[]):
         
                 if key !=  'links' and key in columns: print('"'+str(val)+'"'+sep, end="")
          
-        
-        print("\n",end="")
+            print("\n",end="")
         
             
     elif 'id' in resultdata:  #one item returned by rest call
-        
+
         numvals=len(resultdata.items())
         z=0
         
-        for key,val in resultdata.items():
-        
-            # seperate with comma except last item
-            z=z+1
-            if z==numvals: sep=''
-            else: sep=','
-        
-            if key != 'links': print(key,sep,end="")
-                   
-        print("\n",end="")
-        
-        
+        # print header row of column names
+        if showheader:
+            for key,val in resultdata.items():
+            
+                # seperate with comma except last item
+                z=z+1
+                if z==numvals: sep=''
+                else: sep=','
+            
+                if key != 'links': print(key+sep,end="")
+                    
+            print("\n",end="")
+    
         z=0
         
         for key,val in resultdata.items():
@@ -477,7 +476,7 @@ def file_accessible(filepath, mode):
 #   22dec2018 add csv columns only relevent for csv output, defaults provided but can be overriden when called
 #   20feb2020 add simplejson output style
 
-def printresult(result,output_style,colsforcsv=["id","name","type","description","creationTimeStamp","modifiedTimeStamp"]):
+def printresult(result,output_style,colsforcsv=["id","name","type","description","creationTimeStamp","modifiedTimeStamp"],showheaderforcsv=True):
 
     
     # print rest call results
@@ -488,7 +487,7 @@ def printresult(result,output_style,colsforcsv=["id","name","type","description"
         elif output_style=='simplejson':
             simplejsonresults(result)
         elif output_style=='csv':
-            csvresults(result,columns=colsforcsv)
+            csvresults(result,columns=colsforcsv,showheader=showheaderforcsv)
         else:
             print(json.dumps(result,indent=2))
     else: print(result) 

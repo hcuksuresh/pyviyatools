@@ -45,7 +45,7 @@ def exception_handler(exception_type, exception, traceback, debug_hook=sys.excep
     if debug:
         debug_hook(exception_type, exception, traceback)
     else:
-        print "%s: %s" % (exception_type.__name__, exception)
+        print("%s: %s" % (exception_type.__name__, exception))
 
 sys.excepthook = exception_handler
 
@@ -59,4 +59,4 @@ debug=args.debug
 path=getpath(objecturi)
 
 if path is not None:
-    print path
+    print(path)
